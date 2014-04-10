@@ -1,9 +1,18 @@
 module SimpleUtilCollection  
   class WebUtil
-    def self.populate_uvt_as_needed( cookies )
-      cookies["uvt_#{Rails.env}"] = { :value => Base64.strict_encode64( Time.now.strftime( "%Y%m%d%H%M%S%L" ) + rand( 10000..99999 ).to_s ), 
-                                      :expires => 10.years.from_now.utc } unless cookies["uvt_#{Rails.env}"]
+    def self.populate_initial_referrer_as_needed( cookies, referrer )
+      cookies["initial_referrer_#{Rails.env}"] = referrer unless cookies["initial_referrer_#{Rails.env}"]
     end
+
+    def self.populate_uvt_as_needed( cookies )
+      unless cookies["uvt_#{Rails.env}"]
+        cookies["uvt_#{Rails.env}"] = { :value => Base64.strict_encode64( Time.now.strftime( "%Y%m%d%H%M%S%L" ) + rand( 10000..99999 ).to_s ), 
+                                        :expires => 10.years.from_now.utc }
+        true 
+      else
+        false
+      end
+    end    
 
     def self.utm_params_to_cookies( params, cookies )
       cookies["utm_source_#{Rails.env}"] =   { :value => params[:utm_source],   :expires => 12.months.from_now.utc } if params[:utm_source]    
@@ -15,6 +24,10 @@ module SimpleUtilCollection
 
     def self.utm_source( cookies )
       cookies["utm_source_#{Rails.env}"]
+    end
+
+    def self.initial_referrer( cookies )
+      cookies["initial_referrer_#{Rails.env}"]
     end
 
     def self.utm_medium( cookies )
