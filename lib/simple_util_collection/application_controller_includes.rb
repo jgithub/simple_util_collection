@@ -1,5 +1,7 @@
 module SimpleUtilCollection  
   module ApplicationControllerIncludes 
+    include SimpleUtilCollection::SamAuthentication::SamAuthenticationHelpers
+
     def body_class_names
       @body_class_names ||= []    
       @body_class_names.join(" ")
@@ -28,6 +30,13 @@ module SimpleUtilCollection
       base.send :before_filter, lambda{ SimpleUtilCollection::WebUtil.utm_params_to_cookies( params, cookies ) }
       base.send :helper_method, :body_class_names
       base.send :helper_method, :add_body_class_name
+
+      base.send :helper_method, :sam_authd_user
+      base.send :helper_method, :sam_current_user
+      base.send :helper_method, :sam_masquerading?
+      base.send :helper_method, :sam_user_signed_in?
+      base.send :helper_method, :sam_user_session
+      base.send :helper_method, :sam_stop_masquerading      
     end       
   end
 end
