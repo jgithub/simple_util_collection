@@ -11,7 +11,7 @@
 module SimpleUtilCollection
   module DbSeedModule
     class DbSeed < ActiveRecord::Base
-      DEFAULT_AUTO_INCREMENT_VALUE = 100000
+      DEFAULT_AUTO_INCREMENT_VALUE = 1000000
 
       def self.reseed?
         DbSeed.count > 0
@@ -36,6 +36,7 @@ module SimpleUtilCollection
       def self.db_autoincrement_settings!(table_name)
         auto_increment_number = DbSeed::DEFAULT_AUTO_INCREMENT_VALUE;
         db_adapter = ActiveRecord::Base.connection.adapter_name.downcase.to_sym
+        STDERR.puts "Setting auto-increment value of #{table_name} to #{auto_increment_number}..."
         
         case db_adapter
         when :postgresql
