@@ -20,7 +20,7 @@ module SimpleUtilCollection
       cookies["utm_term_#{Rails.env}"] =     { :value => params[:utm_term],     :expires => 24.months.from_now.utc } if params[:utm_term]
       cookies["utm_content_#{Rails.env}"] =  { :value => params[:utm_content],  :expires => 24.months.from_now.utc } if params[:utm_content]      
       cookies["utm_campaign_#{Rails.env}"] = { :value => params[:utm_campaign], :expires => 24.months.from_now.utc } if params[:utm_campaign] 
-      cookies["utm_custom1_#{Rails.env}"] =   { :value => params[:utm_custom1],   :expires => 24.months.from_now.utc } if params[:utm_custom1]    
+      set_utm_custom1_cookie_value( cookies, params[:utm_custom1] )
     end
 
     def self.utm_source( cookies )
@@ -47,7 +47,11 @@ module SimpleUtilCollection
       cookies["utm_campaign_#{Rails.env}"]
     end 
 
-    def self.utm_custom_1( cookies )
+    def self.set_utm_custom1_cookie_value( cookies, value )
+      cookies["utm_custom1_#{Rails.env}"] =   { :value => value,   :expires => 24.months.from_now.utc } if value    
+    end
+
+    def self.utm_custom1( cookies )
       cookies["utm_custom1_#{Rails.env}"]
     end          
 
