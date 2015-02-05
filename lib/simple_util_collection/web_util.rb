@@ -15,11 +15,12 @@ module SimpleUtilCollection
     end    
 
     def self.utm_params_to_cookies( params, cookies )
-      cookies["utm_source_#{Rails.env}"] =   { :value => params[:utm_source],   :expires => 12.months.from_now.utc } if params[:utm_source]    
-      cookies["utm_medium_#{Rails.env}"] =   { :value => params[:utm_medium],   :expires => 12.months.from_now.utc } if params[:utm_medium]
-      cookies["utm_term_#{Rails.env}"] =     { :value => params[:utm_term],     :expires => 12.months.from_now.utc } if params[:utm_term]
-      cookies["utm_content_#{Rails.env}"] =  { :value => params[:utm_content],  :expires => 12.months.from_now.utc } if params[:utm_content]      
-      cookies["utm_campaign_#{Rails.env}"] = { :value => params[:utm_campaign], :expires => 12.months.from_now.utc } if params[:utm_campaign] 
+      cookies["utm_source_#{Rails.env}"] =   { :value => params[:utm_source],   :expires => 24.months.from_now.utc } if params[:utm_source]    
+      cookies["utm_medium_#{Rails.env}"] =   { :value => params[:utm_medium],   :expires => 24.months.from_now.utc } if params[:utm_medium]
+      cookies["utm_term_#{Rails.env}"] =     { :value => params[:utm_term],     :expires => 24.months.from_now.utc } if params[:utm_term]
+      cookies["utm_content_#{Rails.env}"] =  { :value => params[:utm_content],  :expires => 24.months.from_now.utc } if params[:utm_content]      
+      cookies["utm_campaign_#{Rails.env}"] = { :value => params[:utm_campaign], :expires => 24.months.from_now.utc } if params[:utm_campaign] 
+      cookies["utm_custom1_#{Rails.env}"] =   { :value => params[:utm_custom1],   :expires => 24.months.from_now.utc } if params[:utm_custom1]    
     end
 
     def self.utm_source( cookies )
@@ -44,7 +45,11 @@ module SimpleUtilCollection
 
     def self.utm_campaign( cookies )
       cookies["utm_campaign_#{Rails.env}"]
-    end     
+    end 
+
+    def self.utm_custom_1( cookies )
+      cookies["utm_custom1_#{Rails.env}"]
+    end          
 
     def self.uvt( cookies )
       cookies["uvt_#{Rails.env}"]
