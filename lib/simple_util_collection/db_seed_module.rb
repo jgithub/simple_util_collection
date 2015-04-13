@@ -33,8 +33,8 @@ module SimpleUtilCollection
       end
 
 
-      def self.db_autoincrement_settings!(table_name)
-        auto_increment_number = DbSeed::DEFAULT_AUTO_INCREMENT_VALUE;
+      def self.db_autoincrement_settings!(table_name, opts = {} )
+        auto_increment_number = opts[:auto_increment_number] || DbSeed::DEFAULT_AUTO_INCREMENT_VALUE;
         db_adapter = ActiveRecord::Base.connection.adapter_name.downcase.to_sym
         STDERR.puts "Setting auto-increment value of #{table_name} to #{auto_increment_number}..."
         
