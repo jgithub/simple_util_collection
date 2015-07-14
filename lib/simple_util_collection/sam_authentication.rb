@@ -5,9 +5,14 @@ module SimpleUtilCollection
     class SamAuthenticator
       include Singleton
 
-      def current_user( actual_current_user, session, is_masquerading_globally_enabled )
+      def sam_current_user( actual_current_user, session, is_masquerading_globally_enabled )
+        # Assume that the "sam current user" is the actual current user unless there is a perfect set of
+        # conditions that say otherwise
         retval = actual_current_user
-        if actual_current_user && actual_current_user.has_masquerading_ability? && session[:masquerade_as_user_id] && is_masquerading_globally_enabled
+        if ( 
+             is_actual_user_ready_to_masquerade?( actual_current_user, is_masquerading_globally_enabled ) && 
+             session[:masquerade_as_user_id]
+        )
           user = User.find(session[:masquerade_as_user_id])
           if user != actual_current_user
             retval = user
@@ -17,24 +22,41 @@ module SimpleUtilCollection
         retval
       end
 
-      def start_masquerading_as_user( current_user, masquerade_as_user, session, is_masquerading_globally_enabled )
+      def start_masquerading_as_user( actual_current_user, masquerade_as_user, session, is_masquerading_globally_enabled )
         # User#has_masquerading_ability? must be defined
-        if current_user && current_user.has_masquerading_ability? && masquerade_as_user && (masquerade_as_user.id != current_user.id) && is_masquerading_globally_enabled
+        if ( 
+             is_actual_user_ready_to_masquerade?( actual_current_user, is_masquerading_globally_enabled ) &&
+             masquerade_as_user && 
+             (masquerade_as_user != actual_current_user)
+        )
           session[:masquerade_as_user_id] = masquerade_as_user.id
         end
       end
 
-      def masquerading?( current_user, session, is_masquerading_globally_enabled )
-        if current_user && current_user.has_masquerading_ability? && session[:masquerade_as_user_id] && is_masquerading_globally_enabled
-          true
-        else
-          false
+      def masquerading?( actual_current_user, session, is_masquerading_globally_enabled )
+        # Assume NOT masquerading
+        retval = false
+        
+        if actual_current_user
+          sam_current_user = self.sam_current_user( actual_current_user, session, is_masquerading_globally_enabled )
+          if actual_current_user != sam_current_user
+            # If the sam_current_user is NOT the actual_current_user, then this session is masquerading
+            retval = true
+          end
         end
+        
+        retval
       end
 
       def stop_masquerading( session )
         session.delete(:masquerade_as_user_id)
-      end            
+      end      
+
+      private
+
+      def is_actual_user_ready_to_masquerade?( actual_current_user, is_masquerading_globally_enabled )
+        actual_current_user && actual_current_user.has_masquerading_ability? && is_masquerading_globally_enabled
+      end
     end
 
     module SamAuthenticationHelpers
@@ -53,7 +75,7 @@ module SimpleUtilCollection
       end      
       
       def sam_current_user
-        SamAuthenticator.instance.current_user( current_user, session, sam_is_masquerading_globally_enabled? )
+        SamAuthenticator.instance.sam_current_user( current_user, session, sam_is_masquerading_globally_enabled? )
       end    
       
       def sam_masquerading?
