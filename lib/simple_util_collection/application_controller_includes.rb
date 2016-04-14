@@ -14,9 +14,9 @@ module SimpleUtilCollection
 
     def self.included(base)
       base.send :before_filter, lambda{ 
-        if SimpleUtilCollection::WebUtil.populate_uvt_as_needed( cookies ) 
+        if SimpleUtilCollection::WebUtil.populate_uvt_as_needed( params, request, session, cookies )
           # When populating the uvt, also populate the referer
-          SimpleUtilCollection::WebUtil.populate_initial_referrer_as_needed( cookies, request.referer )
+          SimpleUtilCollection::WebUtil.populate_initial_referrer_as_needed( session, request.referer )
         end
       }
       base.send :before_filter, lambda{
@@ -27,7 +27,7 @@ module SimpleUtilCollection
           add_body_class_name( "#{action_name}" )    
         end        
       }
-      base.send :before_filter, lambda{ SimpleUtilCollection::WebUtil.utm_params_to_cookies( params, cookies ) }
+      base.send :before_filter, lambda{ SimpleUtilCollection::WebUtil.utm_params_to_session( params, session ) }
       base.send :helper_method, :body_class_names
       base.send :helper_method, :add_body_class_name
 
