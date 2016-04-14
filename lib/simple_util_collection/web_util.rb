@@ -69,8 +69,8 @@ module SimpleUtilCollection
       session["utm_custom1"]
     end          
 
-    def self.uvt( session )
-      session["uvt"]
+    def self.uvt( cookies )
+      cookies["uvt_#{Rails.env}"]
     end  
   end
 end
