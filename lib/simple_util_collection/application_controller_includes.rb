@@ -12,13 +12,15 @@ module SimpleUtilCollection
       @body_class_names << value
     end 
 
+    def populate_uvt_as_needed
+      if SimpleUtilCollection::WebUtil.populate_uvt_as_needed( params, request, session, cookies )
+        # When populating the uvt, also populate the referer
+        SimpleUtilCollection::WebUtil.populate_initial_referrer_as_needed( session, request.referer )
+      end      
+    end
+
     def self.included(base)
-      base.send :before_filter, lambda{ 
-        if SimpleUtilCollection::WebUtil.populate_uvt_as_needed( params, request, session, cookies )
-          # When populating the uvt, also populate the referer
-          SimpleUtilCollection::WebUtil.populate_initial_referrer_as_needed( session, request.referer )
-        end
-      }
+      base.send :before_filter, :populate_uvt_as_needed
       base.send :before_filter, lambda{
         unless body_class_names.present?
           add_body_class_name( "controller-action-#{controller_name}-#{action_name}" )
